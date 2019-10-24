@@ -8,9 +8,7 @@ const depots = {
         const email = auth_data.email;
         var depot_contents = [];
 
-        console.log(email);
-
-        db.each("SELECT u.rowid as user_rowid, u.name as username, d.balance, d.rowid as depot_rowid, object_rowid, number_of_objects, o.name as objname " +
+        db.each("SELECT u.rowid as user_rowid, u.name as username, d.balance, d.rowid as depot_rowid, object_rowid, number_of_objects, o.name as objname, o.current_price " +
             "FROM users u " +
             "LEFT JOIN depots d ON u.rowid = d.user_rowid " +
             "LEFT JOIN objects_in_depot oid ON d.rowid = oid.depot_rowid " +
@@ -30,9 +28,9 @@ const depots = {
                 }
                 depot_contents.push({user_rowid: row.user_rowid,
                     username: row.username, balance: row.balance, object_rowid: row.object_rowid,
-                    number_of_objects: row.number_of_objects, objname: row.objname});
+                    number_of_objects: row.number_of_objects, objname: row.objname, current_price: row.current_price});
                 }, function() {
-                    console.log(depot_contents);
+                    // console.log(depot_contents);
                     return res.json({ data: depot_contents });
                 });
     },
@@ -58,30 +56,59 @@ const depots = {
                         }
                     });
                 }
-                console.log(rows);
-                const new_balance = parseInt(funds) + parseInt(rows.balance);
+                // console.log(rows);
+                if (rows.depot_rowid !== null) {
+                    const new_balance = parseInt(funds) + parseInt(rows.balance);
 
-                db.get("UPDATE depots SET balance = ? WHERE rowid = ?",
-                new_balance,
-                rows.depot_rowid,
-                (err) => {
-                    if (err) {
-                        return res.status(500).json({
-                            errors: {
-                                status: 500,
-                                source: "/objects/buy-object",
-                                title: "Database error",
-                                detail: err.message
-                            }
-                        });
-                    } else {
-                        return res.status(201).json({
-                            data: {
-                                message: funds + " has been added to your balance. Your new balance is " + new_balance
-                            }
-                        });
-                    }
-                });
+                    db.get("UPDATE depots SET balance = ? WHERE rowid = ?",
+                    new_balance,
+                    rows.depot_rowid,
+                    (err) => {
+                        if (err) {
+                            return res.status(500).json({
+                                errors: {
+                                    status: 500,
+                                    source: "/depots/add-funds",
+                                    title: "Database error",
+                                    detail: err.message
+                                }
+                            });
+                        } else {
+                            return res.status(201).json({
+                                data: {
+                                    new_balance: new_balance,
+                                    message: funds + " has been added to your balance. Your new balance is " + new_balance
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    // Depot doesnt exist, create it
+                    const new_balance = parseInt(funds);
+
+                    db.get("INSERT INTO depots (balance, user_rowid) VALUES (?,?)",
+                    new_balance,
+                    rows.user_rowid,
+                    (err) => {
+                        if (err) {
+                            return res.status(500).json({
+                                errors: {
+                                    status: 500,
+                                    source: "/depots/add-funds",
+                                    title: "Database error",
+                                    detail: err.message
+                                }
+                            });
+                        } else {
+                            return res.status(201).json({
+                                data: {
+                                    new_balance: new_balance,
+                                    message: funds + " has been added to your balance. Your new balance is " + new_balance
+                                }
+                            });
+                        }
+                    });
+                }
             }
         );
     }

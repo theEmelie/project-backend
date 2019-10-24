@@ -10,9 +10,6 @@ const objects = {
         const auth_data = jwt.verify(my_token, jwtSecret);
         const email = auth_data.email;
 
-        // console.log(email);
-        // console.log(number_to_buy);
-
         db.get("SELECT rowid, * FROM objects WHERE rowid = ?",
             rowid,
             (err, rows) => {
@@ -27,7 +24,6 @@ const objects = {
                     });
                 }
                 if (rows !== undefined) {
-                    // console.log(rows);
                     // found item to buy. Now check funds
                     // find user
                     db.get("SELECT rowid, * FROM users WHERE email = ?",
@@ -45,7 +41,6 @@ const objects = {
                         }
                         // found user, now get depot for user
                         if (user_rows !== undefined) {
-                            // console.log(user_rows);
                             db.get("SELECT rowid, * FROM depots WHERE user_rowid = ?",
                             user_rows.rowid,
                             (err, depot_rows) => {
@@ -61,12 +56,10 @@ const objects = {
                                 }
                                 // checking depot exist
                                 if (depot_rows !== undefined) {
-                                    // console.log(depot_rows);
                                     // check user can afford item
                                     const purchase_price = number_to_buy * rows.current_price;
 
                                     if (depot_rows.balance >= purchase_price) {
-                                        // console.log("user has enough balance");
                                         // user has enough balance
                                         const new_balance = depot_rows.balance - purchase_price;
 
@@ -86,8 +79,6 @@ const objects = {
                                             }
                                         });
                                         // check if depot already has item
-                                        // console.log(depot_rows.rowid);
-                                        // console.log(rows.rowid);
                                         db.get("SELECT rowid, * FROM objects_in_depot WHERE depot_rowid = ? AND object_rowid = ?",
                                         depot_rows.rowid,
                                         rows.rowid,
@@ -102,10 +93,8 @@ const objects = {
                                                     }
                                                 });
                                             }
-                                            // console.log(obj_depot);
                                             if (obj_depot !== undefined) {
                                                 // update objects_in_depot
-                                                // console.log("update objects_in_depot");
                                                 const new_number = parseInt(obj_depot.number_of_objects) + parseInt(number_to_buy);
 
                                                 db.get("UPDATE objects_in_depot SET number_of_objects = ? WHERE rowid = ?",
@@ -124,14 +113,16 @@ const objects = {
                                                     } else {
                                                         return res.status(201).json({
                                                             data: {
-                                                                message: "Purchase complete. You have bought " + number_to_buy + " " + rows.name
+                                                                message: "Purchase complete. You have bought " + number_to_buy + " " + rows.name + " which has cost you " + purchase_price,
+                                                                number_to_buy: number_to_buy,
+                                                                name: rows.name,
+                                                                purchase_price: purchase_price
                                                             }
                                                         });
                                                     }
                                                 });
                                             } else {
                                                 // insert into objects_in_depot
-                                                // console.log("insert into objects_in_depot");
                                                 db.get("INSERT INTO objects_in_depot (depot_rowid, object_rowid, number_of_objects) VALUES (?,?,?)",
                                                 depot_rows.rowid,
                                                 rows.rowid,
@@ -149,7 +140,10 @@ const objects = {
                                                     } else {
                                                         return res.status(201).json({
                                                             data: {
-                                                                message: "Purchase complete. You have bought " + number_to_buy + " " + rows.name
+                                                                message: "Purchase complete. You have bought " + number_to_buy + " " + rows.name + " which has cost you " + purchase_price,
+                                                                number_to_buy: number_to_buy,
+                                                                name: rows.name,
+                                                                purchase_price: purchase_price
                                                             }
                                                         });
                                                     }
@@ -157,7 +151,6 @@ const objects = {
                                             }
                                         });
                                     } else {
-                                        // console.log("user doesnt have enough balance");
                                         // user doesnt have enough balance
                                         return res.status(402).json({
                                             errors: {
@@ -168,7 +161,16 @@ const objects = {
                                             }
                                         });
                                     }
-                                    // console.log(purchase_price);
+                                } else {
+                                    // user has no depot
+                                    return res.status(402).json({
+                                        errors: {
+                                            status: 402,
+                                            source: "/objects/buy-object",
+                                            title: "User has no balance",
+                                            detail: "User doesnt have enough funds"
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -211,12 +213,11 @@ const objects = {
                         }
                     });
                 }
-                console.log(rows);
                 if (rows.number_of_objects >= number_to_sell) {
                     // Enough objects to sell
-                    const sale_funds = parseInt(rows.current_price) * parseInt(number_to_sell);
+                    const sale_funds = parseFloat(rows.current_price) * parseInt(number_to_sell);
                     const new_number = parseInt(rows.number_of_objects) - parseInt(number_to_sell);
-                    const new_balance = parseInt(rows.balance) + sale_funds;
+                    const new_balance = parseFloat(rows.balance) + sale_funds;
 
                     db.get("UPDATE objects_in_depot SET number_of_objects = ? WHERE rowid = ?",
                     new_number,
@@ -248,7 +249,13 @@ const objects = {
                             }
                             return res.status(201).json({
                                 data: {
-                                    message: "Sale complete. You have sold " + number_to_sell + " " + rows.objname
+                                    message: "Sale complete. You have sold " + number_to_sell + " " + rows.objname + " for " + sale_funds,
+                                    object_rowid: rows.object_rowid,
+                                    number_of_objects: new_number,
+                                    objname: rows.objname,
+                                    balance: new_balance,
+                                    number_to_sell: number_to_sell,
+                                    sale_funds: sale_funds
                                 }
                             });
                         });
@@ -265,13 +272,6 @@ const objects = {
                         }
                     });
                 }
-                // depot_contents.push({user_rowid: row.user_rowid,
-                //     username: row.username, balance: row.balance,
-                //     number_of_objects: row.number_of_objects, objname: row.objname});
-                // }, function() {
-                //     console.log(depot_contents);
-                //     return res.json({ data: depot_contents });
-                // });
             });
     },
     viewObjects: function(res, body, my_token) {
@@ -291,10 +291,33 @@ const objects = {
             }
             objects.push({rowid: row.rowid, name: row.name, current_price: row.current_price, });
             }, function() {
-                console.log(objects);
                 return res.json({ data: objects });
             }
         );
+    },
+
+    updatePrices: function(priceCallback) {
+        let items;
+        let rate = 1.000;
+        let variance = 0.8;
+
+        // Get all objects
+        items = db.all("SELECT rowid, * FROM objects",
+        function (err, objects) {
+            if (err) {
+                console.log(err);
+            }
+            // Update prices for all objects and write back to db
+            objects.forEach(function(item) {
+                item.current_price = Math.round(100*(item.current_price * rate + variance * (Math.random() - 0.5)))/100;
+
+                db.get("UPDATE objects SET current_price = ? WHERE rowid = ?",
+                item.current_price,
+                item.rowid
+                );
+            });
+            priceCallback(objects);
+        });
     }
 };
 

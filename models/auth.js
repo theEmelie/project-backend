@@ -41,8 +41,6 @@ const auth = {
                 email,
                 hash, (err) => {
                     if (err) {
-                        console.log("db error: " + err.message);
-                        // console.log(err);
                         return res.status(500).json({
                             errors: {
                                 status: 500,

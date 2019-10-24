@@ -1,4 +1,2 @@
-INSERT INTO reports (weeknumber, title, description)
-VALUES (1,
-    "Header test",
-    "Text test");
+INSERT INTO objects (name, current_price)
+VALUES ("Plastros", 50);

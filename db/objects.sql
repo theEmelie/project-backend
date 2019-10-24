@@ -1,14 +1,14 @@
 INSERT INTO objects (name, current_price)
-VALUES ("Rose", 50);
+VALUES ("Ros", 55);
 
 INSERT INTO objects (name, current_price)
-VALUES ("Tulip", 20);
+VALUES ("Tulpan", 52);
 
 INSERT INTO objects (name, current_price)
-VALUES ("Lily", 100);
+VALUES ("Lilja", 57);
 
 INSERT INTO objects (name, current_price)
-VALUES ("Orchid", 300);
+VALUES ("Orkidé", 56);
 
 INSERT INTO objects (name, current_price)
-VALUES ("Peony", 66);
+VALUES ("Pion", 53);

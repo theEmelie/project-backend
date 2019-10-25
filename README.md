@@ -40,9 +40,9 @@ Test
 För att testa backenden har jag valt att använda Chai och Mocha. Då det är dom vi använde i föregående kursmoment så kändes det som en bra idé att återanvända verktyg som man är van vid. Jag har inte gjort några enhetstester då jag inte ritkigt vet vad jag skulle kunna testa eftersom det mesta har med databasen att göra. Jag har även inte testat alla 'Database Error' för dom vet jag inte riktigt hur jag ska testa. Jag fick en del problem med min testning som jag i början inte förstod varför, för ibland fick jag fel, men ibland inte. Och det visade sig vara för att alla tester behöver inte vara klara innan nästa test börjar, och en del tester är helt beroende på andra tester t.ex. för att kunna testa att köpa ett objekt så måste vi först ha ett test som lägger in medel på vårat depå. Och det har ju med att göra att funktionerna i våra modeller är asyncade. För att lösa detta så har jag en beforeEach funktion i början där jag sätter en timeout på 500ms, och efter att varje test har körts så kommer den här funktionen kallas och på så sätt kommer alla tester att hamna i rätt ordning. Jag tycker att jag har fått hyfsat bra kodtäckning, om man kollar genom Mocha kan man se att allt är över 80% i Stmts (Sammanlagt 87.5%), över 50% i Branch (Sammanlagt 66.22%) och alla förutom en fil (app.js) är på 100% i Funcs (94.55%) och allt är över 80% i Lines (Sammanlagt 87.34%).
 
 |-------------|----------|----------|----------|----------|  
-| File        |  % Stmts | % Branch |  % Funcs |  % Lines |  
+|-File--------|--% Stmts-|-% Branch-|--% Funcs-|--% Lines-|  
 |-------------|----------|----------|----------|----------|  
-| All files   |     87.5 |    66.22 |    94.55 |    87.34 |  
+|-All files---|-----87.5-|----66.22-|----94.55-|----87.34-|  
 |-------------|----------|----------|----------|----------|  
 
 Till min CI-kedja har jag valt att använda Travis och Scrutinizer. Även dom har jag valt eftersom vi använde dom i föregående kursmoment.

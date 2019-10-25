@@ -2,7 +2,7 @@ build:
   nodes:
     coverage:
       tests:
-        override:
+        override: [js-scrutinizer-run]
           - command: npm test
             coverage:
               file: coverage/clover.xml

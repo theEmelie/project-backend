@@ -1,3 +1,6 @@
+/* eslint-disable camelcase */
+/* eslint-disable max-len */
+
 const db = require("../db/database.js");
 const jwt = require('jsonwebtoken');
 const jwtSecret = "averylongpassword";
@@ -7,6 +10,8 @@ const depots = {
         const auth_data = jwt.verify(my_token, jwtSecret);
         const email = auth_data.email;
         var depot_contents = [];
+
+        console.log(email);
 
         db.each("SELECT u.rowid as user_rowid, u.name as username, d.balance, d.rowid as depot_rowid, object_rowid, number_of_objects, o.name as objname, o.current_price " +
             "FROM users u " +

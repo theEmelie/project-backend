@@ -1,10 +1,17 @@
 [![Build Status](https://travis-ci.org/theEmelie/project-backend.svg?branch=master)](https://travis-ci.org/theEmelie/project-backend)
+[![Code Coverage](https://scrutinizer-ci.com/g/theEmelie/project-backend/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/theEmelie/project-backend/?branch=master)
+[![Build Status](https://scrutinizer-ci.com/g/theEmelie/project-backend/badges/build.png?b=master)](https://scrutinizer-ci.com/g/theEmelie/project-backend/build-status/master)
 
 This is the backend for a project in course jsramverk
 
 To run the project
 ======================
-npm start
+`npm start`
+
+To run the tests
+======================
+`npm test`
+
 
 
 Backend
@@ -25,4 +32,17 @@ Och till sist så ska vi göra våra objekt, i våran route så kallar vi på tr
 Realtid
 ======================
 Vi vill att priset på våra objekt ska vara dynamiskt med hjälp utav sockets.
-Vi börjar med att importera dom funktionerna vi behöver för att skapa en socket io server. Vi anger en annan port för våran socket och sedan ger en io.origins vilket är våran frontend adress. Vi gör en enkel 'io.on' connection så vi kan se när en användare har anslutit sig till servern, och en 'socket.on' disconnect när användaren har försvunnit. Sedan har jag en funktion som heter 'pricesUpdated' som tar emot argumentet 'items', och där gör vi en 'io.emit' på newPrices och items, vilket gör att vi kan använda dom i våran frontend senare. Och till sist gör vi en funktion 'setInterval' där vi kallar på en ny funktion 'updatePrices' som vi kommer skapa i våran objekt model och vi har våran föregående funktion som ett argument till den och visätter en interval på 5 sekunder (priserna kommer uppdateras var femte sekund). I våran model så börjar vi med att sätta rate till 1.000 och variance till 0.8, vill man att priserna ska variera med eller mindre så kan man ändra 0.8 och vill man att priserna endast ska gå upp eller ner så kan man ändra 1.000. Sedan hämter vi alla våra objekt med en 'db.all' och till sist uppdaterar vi våra priser för alla objekt och skriver tillbaka till databasen en en foreach loop.
+Vi börjar med att importera dom funktionerna vi behöver för att skapa en socket io server. Vi anger en annan port för våran socket och sedan ger en io.origins vilket är våran frontend adress. Vi gör en enkel 'io.on' connection så vi kan se när en användare har anslutit sig till servern, och en 'socket.on' disconnect när användaren har försvunnit. Sedan har jag en funktion som heter 'pricesUpdated' som tar emot argumentet 'items', och där gör vi en 'io.emit' på newPrices och items, vilket gör att vi kan använda dom i våran frontend senare. Och till sist gör vi en funktion 'setInterval' där vi kallar på en ny funktion 'updatePrices' som vi kommer skapa i våran objekt model och vi har våran föregående funktion som ett argument till den och visätter en interval på 5 sekunder (priserna kommer uppdateras var femte sekund). I våran model så börjar vi med att sätta rate till 1.000 och variance till 0.8, vill man att priserna ska variera med eller mindre så kan man ändra 0.8 och vill man att priserna endast ska gå upp eller ner så kan man ändra 1.000. Sedan hämter vi alla våra objekt med en 'db.all' och till sist uppdaterar vi våra priser för alla objekt och skriver tillbaka till databasen med en foreach loop.
+
+Test
+======================
+För att testa backenden har jag valt att använda Chai och Mocha. Då det är dom vi använde i föregående kursmoment så kändes det som en bra idé att återanvända verktyg som man är van vid. Jag har inte gjort några enhetstester då jag inte ritkigt vet vad jag skulle kunna testa eftersom det mesta har med databasen att göra. Jag har även inte testat alla 'Database Error' för dom vet jag inte riktigt hur jag ska testa. Jag fick en del problem med min testning som jag i början inte förstod varför, för ibland fick jag fel, men ibland inte. Och det visade sig vara för att alla tester behöver inte vara klara innan nästa test börjar, och en del tester är helt beroende på andra tester t.ex. för att kunna testa att köpa ett objekt så måste vi först ha ett test som lägger in medel på vårat depå. Och det har ju med att göra att funktionerna i våra modeller är asyncade. För att lösa detta så har jag en beforeEach funktion i början där jag sätter en timeout på 500ms, och efter att varje test har körts så kommer den här funktionen kallas och på så sätt kommer alla tester att hamna i rätt ordning. Jag tycker att jag har fått hyfsat bra kodtäckning, om man kollar genom Mocha kan man se att allt är över 80% i Stmts (Sammanlagt 87.5%), över 50% i Branch (Sammanlagt 66.22%) och alla förutom en fil (app.js) är på 100% i Funcs (94.55%) och allt är över 80% i Lines (Sammanlagt 87.34%).
+
+-------------|----------|----------|----------|----------|
+File         |  % Stmts | % Branch |  % Funcs |  % Lines |
+-------------|----------|----------|----------|----------|
+All files    |     87.5 |    66.22 |    94.55 |    87.34 |
+-------------|----------|----------|----------|----------|
+
+Till min CI-kedja har jag valt att använda Travis och Scrutinizer. Även dom har jag valt eftersom vi använde dom i föregående kursmoment.
+Jag tycker inte att Travis ger så jätte mycket för mig, den säger mest om testen har gått igenom eller inte. Jag gillar scrutinizer mer, man kan se kodtäckningen och även kod kvaliteten och på så sätt kan man sträva efter att göra sina tester bättre.

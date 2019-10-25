@@ -1,4 +1,5 @@
 /* eslint-env node, mocha */
+/* eslint-disable max-len */
 
 process.env.NODE_ENV = 'test';
 

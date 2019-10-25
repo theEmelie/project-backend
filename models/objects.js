@@ -1,3 +1,6 @@
+/* eslint-disable camelcase */
+/* eslint-disable max-len */
+
 const db = require("../db/database.js");
 const jwt = require('jsonwebtoken');
 const jwtSecret = "averylongpassword";
@@ -274,7 +277,7 @@ const objects = {
                 }
             });
     },
-    viewObjects: function(res, body, my_token) {
+    viewObjects: function(res) {
         var objects = [];
 
         db.each("SELECT rowid, * FROM objects",

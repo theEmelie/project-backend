@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js",
-    "production": "NODE_ENV='production node app.js",
+    "production": "NODE_ENV='production' node app.js",
     "pretest": "bash db/reset_test_db.bash",
     "test": "nyc --reporter=html --reporter=text --reporter=clover mocha --timeout 10000 --exit",
     "clean": "rm -rf node_modules package-lock.json",

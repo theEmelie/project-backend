@@ -13,7 +13,7 @@ const objects = require('./routes/objects');
 const depots = require('./routes/depots');
 const objectsModel = require('./models/objects');
 
-const socketPort = 9595;
+const socketPort = 8333;
 
 app.use(cors());
 app.use(bodyParser.json()); // for parsing application/json

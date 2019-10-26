@@ -42,7 +42,7 @@ function pricesUpdated(items) {
 
 setInterval(function () {
     // Update prices, providing callback
-    let items = objectsModel.updatePrices(pricesUpdated);
+    objectsModel.updatePrices(pricesUpdated);
 }, 5000);
 
 

@@ -8,7 +8,6 @@ const jwtSecret = "averylongpassword";
 const objects = {
     buyObject: function(res, body, my_token) {
         const rowid = body.rowid;
-        const name = body.name;
         const number_to_buy = body.number_to_buy;
         const auth_data = jwt.verify(my_token, jwtSecret);
         const email = auth_data.email;
@@ -300,12 +299,11 @@ const objects = {
     },
 
     updatePrices: function(priceCallback) {
-        let items;
         let rate = 1.000;
         let variance = 0.8;
 
         // Get all objects
-        items = db.all("SELECT rowid, * FROM objects",
+        db.all("SELECT rowid, * FROM objects",
         function (err, objects) {
             if (err) {
                 console.log(err);

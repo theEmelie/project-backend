@@ -19,7 +19,7 @@
     "eslint-plugin-flowtype": "^4.3.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "git": "^0.1.5",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.3.2",
